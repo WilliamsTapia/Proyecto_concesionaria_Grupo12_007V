@@ -1,0 +1,10 @@
+CREATE TABLE vehiculos (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    marca VARCHAR(100) NOT NULL,
+    modelo VARCHAR(100) NOT NULL,
+    anio VARCHAR(4) NOT NULL,
+    patente VARCHAR(20) NOT NULL,
+    estado VARCHAR(50) NOT NULL,
+    precio INT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
