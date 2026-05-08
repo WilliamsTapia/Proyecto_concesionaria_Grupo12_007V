@@ -1,0 +1,59 @@
+services:
+  # --- MICROSERVICIO 1: INVENTARIO ---
+  mysql-inventario:
+    image: mysql:8.0
+    container_name: mysql-inventario
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: 12345
+      MYSQL_DATABASE: concesionaria_inventario_db
+    ports:
+      - "3307:3306"
+    volumes:
+      - mysql_inventario_data:/var/lib/mysql
+
+  microservicio-inventario:
+    build:
+      context: ./inventory/proyectoConcesionaria
+    container_name: microservicio-inventario
+    restart: always
+    depends_on:
+      - mysql-inventario
+    ports:
+      - "8081:8081"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql-inventario:3306/concesionaria_inventario_db?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: 12345
+
+  # --- MICROSERVICIO 2: AUTENTICACIÓN ---
+  mysql-auth:
+    image: mysql:8.0
+    container_name: mysql-auth
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: 12345
+      MYSQL_DATABASE: concesionaria_auth_db
+    ports:
+      - "3308:3306" 
+    volumes:
+      - mysql_auth_data:/var/lib/mysql
+
+  auth-service:
+    build:
+      context: ./auth-service 
+    container_name: auth-service
+    restart: always
+    ports:
+      - "8080:8080"
+    depends_on:
+      - mysql-auth
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql-auth:3306/concesionaria_auth_db?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: 12345
+
+# --- VOLÚMENES GLOBALES ---
+volumes:
+  mysql_inventario_data:
+  mysql_auth_data:
